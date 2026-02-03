@@ -16,7 +16,7 @@ public class ThreadState {
         System.out.println(second.getState());
         second.start();
 
-        while (first.getState() != Thread.State.TERMINATED && second.getState() != Thread.State.TERMINATED) {
+        while (first.getState() != Thread.State.TERMINATED || second.getState() != Thread.State.TERMINATED) {
             Thread.currentThread().sleep(100);
         }
         System.out.println("Работа завершена");
