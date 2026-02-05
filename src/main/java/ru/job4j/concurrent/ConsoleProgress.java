@@ -1,6 +1,6 @@
 package ru.job4j.concurrent;
 
-public class ConsoleProgress implements Runnable{
+public class ConsoleProgress implements Runnable {
 
     @Override
     public void run() {
@@ -10,7 +10,9 @@ public class ConsoleProgress implements Runnable{
                 try {
                     Thread.sleep(500);
                     System.out.print("\r load: " + process[count]);
-                    if (++count == 4) {count = 0;}
+                    if (++count == 4) {
+                        count = 0;
+                    }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
