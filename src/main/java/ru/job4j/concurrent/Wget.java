@@ -1,4 +1,7 @@
 package ru.job4j.concurrent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.regex.Pattern;
@@ -15,7 +18,30 @@ public class Wget implements Runnable {
 
     @Override
     public void run() {
-        /* Скачать файл*/
+        var startAt = System.currentTimeMillis();
+        var file = new File("tmp.xml");
+        try (var input = new URL(url).openStream();
+             var output = new FileOutputStream(file)) {
+            System.out.println("Open connection: " + (System.currentTimeMillis() - startAt) + " ms");
+            var dataBuffer = new byte[1024];
+            int bytesRead;
+            int pause = 0;
+            while ((bytesRead = input.read(dataBuffer, 0, dataBuffer.length)) != -1) {
+                var downloadAt = System.nanoTime();
+                output.write(dataBuffer, 0, bytesRead);
+                float nano = (System.nanoTime() - downloadAt);
+                int timer = (int) (((1024f / nano)) * 1000000f);
+                if (timer > speed) {
+                    pause = timer / this.speed;
+                    Thread.sleep(pause);
+                }
+                System.out.println("Read 1024 bytes : " + nano + " nano." + "Bytes in msec: " + timer + " Sleep: " + pause);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static void checkArguments(String[] args) {
@@ -36,11 +62,8 @@ public class Wget implements Runnable {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        String url = args[0];
-        int speed = Integer.parseInt(args[1]);
         checkArguments(args);
-
-        Thread wget = new Thread(new Wget(url, speed));
+        Thread wget = new Thread(new Wget(args[0], Integer.parseInt(args[1])));
         wget.start();
         wget.join();
     }
