@@ -23,19 +23,24 @@ public class Wget implements Runnable {
         try (var input = new URL(url).openStream();
              var output = new FileOutputStream(file)) {
             System.out.println("Open connection: " + (System.currentTimeMillis() - startAt) + " ms");
-            var dataBuffer = new byte[1024];
-            int bytesRead;
-            int pause = 0;
+            var dataBuffer = new byte[512];
+            int bytesRead = 0;
+            float bytesReadProgress = 0;
+            long downloadAt = System.nanoTime();
+
             while ((bytesRead = input.read(dataBuffer, 0, dataBuffer.length)) != -1) {
-                var downloadAt = System.nanoTime();
-                output.write(dataBuffer, 0, bytesRead);
-                float nano = (System.nanoTime() - downloadAt);
-                int timer = (int) (((1024f / nano)) * 1000000f);
-                if (timer > speed) {
-                    pause = timer / this.speed;
-                    Thread.sleep(pause);
+                bytesReadProgress += bytesRead;
+                if (bytesReadProgress >= speed) {
+                    long nano = (System.nanoTime() - downloadAt);
+                    float miliSec = (System.nanoTime() - downloadAt) * 1000000f;
+                    System.out.println("bytesReadProgress=" + bytesReadProgress + " nano=" + (System.nanoTime() - downloadAt) + " miliSec=" + miliSec);
+                    if (nano < 1000000000f) {
+                        int timer = (int) (((bytesReadProgress / nano)) * 1000000f);
+                        System.out.println("timer=" + timer + " sleep=" + timer / speed);
+                        Thread.sleep( timer / speed);
+                    }
                 }
-                System.out.println("Read 1024 bytes : " + nano + " nano." + "Bytes in msec: " + timer + " Sleep: " + pause);
+                output.write(dataBuffer, 0, bytesRead);
             }
         } catch (IOException e) {
             e.printStackTrace();
