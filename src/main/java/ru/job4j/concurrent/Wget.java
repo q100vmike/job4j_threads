@@ -32,12 +32,8 @@ public class Wget implements Runnable {
                 bytesReadProgress += bytesRead;
                 if (bytesReadProgress >= speed) {
                     long nano = (System.nanoTime() - downloadAt);
-                    float miliSec = (System.nanoTime() - downloadAt) * 1000000f;
-                    System.out.println("bytesReadProgress=" + bytesReadProgress + " nano=" + (System.nanoTime() - downloadAt) + " miliSec=" + miliSec);
                     if (nano < 1000000000f) {
-                        int timer = (int) (((bytesReadProgress / nano)) * 1000000f);
-                        System.out.println("timer=" + timer + " sleep=" + timer / speed);
-                        Thread.sleep( timer / speed);
+                        Thread.sleep((long) (((bytesReadProgress / nano)) * 1000000f) / speed);
                     }
                 }
                 output.write(dataBuffer, 0, bytesRead);
