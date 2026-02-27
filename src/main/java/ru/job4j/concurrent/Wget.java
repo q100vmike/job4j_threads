@@ -19,21 +19,27 @@ public class Wget implements Runnable {
     @Override
     public void run() {
         var startAt = System.currentTimeMillis();
-        var file = new File("tmp.xml");
-        try (var input = new URL(url).openStream();
-             var output = new FileOutputStream(file)) {
-            System.out.println("Open connection: " + (System.currentTimeMillis() - startAt) + " ms");
+        String fileName = "tmp.xml";
+        int lastAtIndex = url.lastIndexOf('/');
+        if (lastAtIndex != -1) {
+            fileName = "_" + url.substring(lastAtIndex + 1);
+        }
+        var file = new File(fileName);
+
+        try (var input = new URL(url).openStream(); var output = new FileOutputStream(file)) {
+            long milis = (System.currentTimeMillis() - startAt);
+            System.out.println("Open connection: " + milis + " ms");
             var dataBuffer = new byte[512];
             int bytesRead = 0;
             float bytesReadProgress = 0;
-            long downloadAt = System.nanoTime();
 
             while ((bytesRead = input.read(dataBuffer, 0, dataBuffer.length)) != -1) {
                 bytesReadProgress += bytesRead;
                 if (bytesReadProgress >= speed) {
-                    long nano = (System.nanoTime() - downloadAt);
-                    if (nano < 1000000000f) {
-                        Thread.sleep((long) (((bytesReadProgress / nano)) * 1000000f) / speed);
+                    var t = (System.currentTimeMillis() - milis);
+                    if ((System.currentTimeMillis() - milis) < 1000) {
+                        System.out.println("milis =" + (System.currentTimeMillis() - milis) + " sleep= " +((bytesReadProgress / milis)) / speed);
+                        Thread.sleep((long) ((bytesReadProgress / milis)) / speed);
                     }
                 }
                 output.write(dataBuffer, 0, bytesRead);
