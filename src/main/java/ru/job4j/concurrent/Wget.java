@@ -36,10 +36,10 @@ public class Wget implements Runnable {
             while ((bytesRead = input.read(dataBuffer, 0, dataBuffer.length)) != -1) {
                 bytesReadProgress += bytesRead;
                 if (bytesReadProgress >= speed) {
-                    var t = (System.currentTimeMillis() - milis);
-                    if ((System.currentTimeMillis() - milis) < 1000) {
-                        System.out.println("milis =" + (System.currentTimeMillis() - milis) + " sleep= " +((bytesReadProgress / milis)) / speed);
-                        Thread.sleep((long) ((bytesReadProgress / milis)) / speed);
+                    var t = (System.currentTimeMillis() - startAt);
+                    if (t < 1000) {
+                        System.out.println("milis =" + t + " sleep= " + (t / speed));
+                        Thread.sleep((long) ((bytesReadProgress / t)) / speed);
                     }
                 }
                 output.write(dataBuffer, 0, bytesRead);
