@@ -38,8 +38,8 @@ public class Wget implements Runnable {
                 if (bytesReadProgress >= speed) {
                     var t = (System.currentTimeMillis() - startAt);
                     if (t < 1000) {
-                        System.out.println("milis =" + t + " sleep= " + (t / speed));
-                        Thread.sleep((long) ((bytesReadProgress / t)) / speed);
+                        System.out.println("milis =" + t + " sleep= " + (bytesReadProgress / speed));
+                        Thread.sleep((long) (bytesReadProgress) / speed);
                     }
                 }
                 output.write(dataBuffer, 0, bytesRead);
