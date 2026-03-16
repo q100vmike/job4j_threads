@@ -19,6 +19,6 @@ public class UserCache {
     }
 
     public List<User> findAll() {
-        return users.values().stream().collect(Collectors.toUnmodifiableList());
+        return List.copyOf(users.values().stream().collect(Collectors.toList()));
     }
 }
