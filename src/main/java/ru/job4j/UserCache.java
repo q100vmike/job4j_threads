@@ -19,6 +19,11 @@ public class UserCache {
     }
 
     public List<User> findAll() {
-        return List.copyOf(users.values().stream().collect(Collectors.toList()));
+        List<User> list = new ArrayList<>();
+
+        for (User user : users.values()) {
+            list.add(User.of(user.getName()));
+        }
+        return list;
     }
 }
