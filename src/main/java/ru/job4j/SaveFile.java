@@ -6,7 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class SaveFile {
-    private File file;
+    private final File file;
 
     public SaveFile(File file) {
         this.file = file;

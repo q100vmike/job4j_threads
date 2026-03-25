@@ -11,15 +11,15 @@ public class ParseFile {
     }
 
     public String getContent(Predicate<Character> filter) throws IOException {
-        String output = "";
+        StringBuilder output = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             int data;
             while ((data = reader.read()) != -1) {
                 if (filter.test((char) data)) {
-                    output += (char) data;
+                    output.append((char) data);
                 }
             }
         }
-        return output;
+        return output.toString();
     }
 }
