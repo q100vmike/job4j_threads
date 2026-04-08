@@ -1,18 +1,25 @@
 package ru.job4j.cash;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Optional;
+import net.jcip.annotations.GuardedBy;
+import net.jcip.annotations.ThreadSafe;
 
+@ThreadSafe
 public class AccountStorage {
+
+    @GuardedBy("this")
     private final HashMap<Integer, Account> accounts = new HashMap<>();
 
     public synchronized boolean add(Account account) {
-        accounts.put(account.id(), account);
+        accounts.putIfAbsent(account.id(), account);
         return accounts.containsKey(account.id());
     }
 
     public synchronized boolean update(Account account) {
-        return add(account);
+        Account replace = accounts.replace(account.id(), account);
+        return !Objects.isNull(replace);
     }
 
     public synchronized void delete(int id) {
