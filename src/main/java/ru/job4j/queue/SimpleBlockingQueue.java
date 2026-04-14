@@ -1,4 +1,4 @@
-package queue;
+package ru.job4j.queue;
 
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
@@ -19,6 +19,7 @@ public class SimpleBlockingQueue<T> {
     }
 
     public synchronized void offer(T value) throws InterruptedException {
+        int s = queue.size();
         while (queue.size() == capacity) {
             this.wait();
         }
@@ -30,8 +31,12 @@ public class SimpleBlockingQueue<T> {
         while (queue.isEmpty()) {
             this.wait();
         }
+        T el = queue.poll();
         this.notifyAll();
-        return queue.poll();
+        return el;
+    }
 
+    public int size() {
+        return queue.size();
     }
 }
