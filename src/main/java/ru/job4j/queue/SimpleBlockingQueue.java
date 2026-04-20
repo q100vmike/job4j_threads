@@ -19,7 +19,6 @@ public class SimpleBlockingQueue<T> {
     }
 
     public synchronized void offer(T value) throws InterruptedException {
-        int s = queue.size();
         while (queue.size() == capacity) {
             this.wait();
         }
