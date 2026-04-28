@@ -2,15 +2,83 @@ package ru.job4j.queue;
 
 import org.junit.jupiter.api.Test;
 import java.util.concurrent.atomic.AtomicBoolean;
-import ru.job4j.queue.SimpleBlockingQueue;
-
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.IntStream;
 
 import static java.lang.Thread.sleep;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SimpleBlockingQueueTest {
+
+    @Test
+    public void whenFetchAllThenGetItString() throws InterruptedException {
+        final CopyOnWriteArrayList<String> buffer = new CopyOnWriteArrayList<>();
+        final SimpleBlockingQueue<String> queue = new SimpleBlockingQueue<>(4);
+        Thread producer = new Thread(
+                () -> {
+                    IntStream.range(0, 5).forEach(i -> {
+                        try {
+                            queue.offer("el" + i);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
+        );
+        producer.start();
+        Thread consumer = new Thread(
+                () -> {
+                    while (!queue.isEmpty() || !Thread.currentThread().isInterrupted()) {
+                        try {
+                            buffer.add(queue.poll());
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                }
+        );
+        consumer.start();
+        producer.join();
+        consumer.interrupt();
+        consumer.join();
+        assertThat(buffer).containsExactly("el0", "el1", "el2", "el3", "el4");
+    }
+
+    @Test
+    public void whenFetchAllThenGetIt() throws InterruptedException {
+        final CopyOnWriteArrayList<Integer> buffer = new CopyOnWriteArrayList<>();
+        final SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<>(6);
+        Thread producer = new Thread(
+                () -> {
+                    IntStream.range(0, 5).forEach(i -> {
+                        try {
+                            queue.offer(i);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
+        );
+        producer.start();
+        Thread consumer = new Thread(
+                () -> {
+                    while (!queue.isEmpty() || !Thread.currentThread().isInterrupted()) {
+                        try {
+                            buffer.add(queue.poll());
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                }
+        );
+        consumer.start();
+        producer.join();
+        consumer.interrupt();
+        consumer.join();
+        assertThat(buffer).containsExactly(0, 1, 2, 3, 4);
+    }
 
     @Test
     void whenQueueWorked() throws InterruptedException {

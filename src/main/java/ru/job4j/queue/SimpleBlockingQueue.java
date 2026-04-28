@@ -38,4 +38,8 @@ public class SimpleBlockingQueue<T> {
     public int size() {
         return queue.size();
     }
+
+    public boolean isEmpty() {
+        return queue.isEmpty();
+    }
 }
