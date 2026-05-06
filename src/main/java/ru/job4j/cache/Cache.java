@@ -14,13 +14,12 @@ public class Cache {
     }
 
     public boolean update(Base model) throws OptimisticException {
-        memory.computeIfPresent(model.id(), (key, value) -> {
+        return memory.computeIfPresent(model.id(), (key, value) -> {
             if (model.version() != value.version()) {
                 throw new OptimisticException("Can't update the model");
             }
             return new Base(model.id(), model.name(), model.version() + 1);
-        });
-        return true;
+        }) == null;
     }
 
     public void delete(int id) {
