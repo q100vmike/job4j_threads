@@ -19,7 +19,7 @@ public class Cache {
                 throw new OptimisticException("Can't update the model");
             }
             return new Base(model.id(), model.name(), model.version() + 1);
-        }) == null;
+        }) != null;
     }
 
     public void delete(int id) {
