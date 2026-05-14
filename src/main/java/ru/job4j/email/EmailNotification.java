@@ -5,18 +5,13 @@ import java.util.concurrent.Executors;
 
 public class EmailNotification {
 
-    private ExecutorService pool = Executors.newFixedThreadPool(
+    private final ExecutorService pool = Executors.newFixedThreadPool(
             Runtime.getRuntime().availableProcessors()
     );
 
     public void emailTo(User user) {
-        pool.submit(new Runnable() {
-            @Override
-            public void run() {
-                send(String.format("Notification %s to email %s", user.getUsername(), user.getEmail()),
-                        String.format("Add a new event to %username", user.getUsername()), user.getEmail());
-            }
-        });
+        pool.submit(() -> send(String.format("Notification %s to email %s", user.getUsername(), user.getEmail()),
+                String.format("Add a new event to %username", user.getUsername()), user.getEmail()));
     }
 
     public void close() {
