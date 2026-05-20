@@ -4,19 +4,30 @@ import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
-public class ParallelIndexSearch extends RecursiveTask<Integer>{
+public class ParallelIndexSearch<T> extends RecursiveTask<Integer> {
 
     private final List<?> array;
-    private final int index;
+    private final T obj;
 
-    public ParallelIndexSearch(List<?> array, int from, int to, int index) {
+    //public T getObj() { return obj; }
+
+    public ParallelIndexSearch(List<?> array, T obj) {
         this.array = array;
-        this.index = index;
+        this.obj = obj;
     }
 
     @Override
     protected Integer compute() {
-        return 0;
+        int len = array.size();
 
+        if (len <= 10) {
+            for (int i = 0; i < len; i++) {
+                if (array.get(i).equals(obj)) {
+                    return i;
+               }
+            }
+        }
+
+        return 0;
     }
 }
