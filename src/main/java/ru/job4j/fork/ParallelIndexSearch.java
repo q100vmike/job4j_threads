@@ -1,5 +1,8 @@
 package ru.job4j.fork;
 
+import ru.job4j.User;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
@@ -10,6 +13,7 @@ public class ParallelIndexSearch<T> extends RecursiveTask<Integer> {
     private final T obj;
     private final int from;
     private final int to;
+
     //public T getObj() { return obj; }
 
     public ParallelIndexSearch(List<?> array, T obj, int from, int to) {
@@ -30,6 +34,7 @@ public class ParallelIndexSearch<T> extends RecursiveTask<Integer> {
                     return i;
                }
             }
+            return -1;
         }
 
         int middle = (from + to) / 2;
@@ -39,9 +44,31 @@ public class ParallelIndexSearch<T> extends RecursiveTask<Integer> {
         // производим деление.
         // оно будет происходить, пока в частях не останется по одному элементу
         leftSort.fork();
-        rightSort.fork();
+        Integer rightResult = rightSort.compute();
+        Integer leftResult = (Integer) leftSort.join();
+
+        // Возвращаем первый найденный индекс
+        if (leftResult != -1) return leftResult;
+        if (rightResult != -1) return rightResult;
+        return -1;
+
+    }
+
+    public static void main(String[] args) {
+
+        List<User> list = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+
+        }
+        User user1 = User.of("One");
+        User user2 = User.of("Two");
+        User user3 = User.of("Three");
 
 
-        return j;
+
+        ForkJoinPool pool = ForkJoinPool.commonPool();
+        ParallelIndexSearch task = new ParallelIndexSearch<>(list, user3, 0, list.size());
+        Integer result = (Integer) pool.invoke(task);
+        System.out.println("result= " + result);
     }
 }
