@@ -21,17 +21,21 @@ public class ParallelIndexSearch<T> extends RecursiveTask<Integer> {
         this.to = to;
     }
 
+    private Integer getIndex(int from, int to) {
+        for (int i = from; i < to; i++) {
+            if (array.get(i).equals(obj)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     @Override
     protected Integer compute() {
         int len = to - from;
 
         if (len <= 10 && len >= 1) {
-            for (int i = from; i < to; i++) {
-                if (array.get(i).equals(obj)) {
-                    return i;
-               }
-            }
-            return -1;
+            return getIndex(from, to);
         }
 
         int middle = (from + to) / 2;
@@ -43,13 +47,10 @@ public class ParallelIndexSearch<T> extends RecursiveTask<Integer> {
         Integer rightResult = rightSort.compute();
         Integer leftResult = (Integer) leftSort.join();
 
-        if (leftResult != -1) {
-            return leftResult;
-        }
-        if (rightResult != -1) {
-            return rightResult;
-        }
-        return -1;
+        return Math.max(leftResult, rightResult);
+    }
+
+    public static void goSearch(List<?> array, T obj) {
 
     }
 }
