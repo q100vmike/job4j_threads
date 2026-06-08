@@ -1,8 +1,5 @@
 package ru.job4j.fork;
 
-import ru.job4j.User;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
@@ -50,7 +47,9 @@ public class ParallelIndexSearch<T> extends RecursiveTask<Integer> {
         return Math.max(leftResult, rightResult);
     }
 
-    public static void goSearch(List<?> array, T obj) {
-
+    public static <T, U> Integer goSearch(List<T> array, U obj) {
+        ForkJoinPool pool = ForkJoinPool.commonPool();
+        ParallelIndexSearch search = new ParallelIndexSearch(array, obj, 0, array.size());
+        return (Integer) pool.invoke(search);
     }
 }

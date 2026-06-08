@@ -28,57 +28,41 @@ class ParallelIndexSearchTest {
     @Test
     void testSearchIndex33() {
         User user = User.of("User33");
-
-        ForkJoinPool pool = ForkJoinPool.commonPool();
-        ParallelIndexSearch task = new ParallelIndexSearch<>(list, user, 0, list.size());
-        Integer result = (Integer) pool.invoke(task);
+        Integer result = ParallelIndexSearch.goSearch(list, user);
         assertThat(result).isEqualTo(33);
     }
 
     @Test
     void testSearchIndex99() {
         User user = User.of("User99");
-
-        ForkJoinPool pool = ForkJoinPool.commonPool();
-        ParallelIndexSearch task = new ParallelIndexSearch<>(list, user, 0, list.size());
-        Integer result = (Integer) pool.invoke(task);
+        Integer result = ParallelIndexSearch.goSearch(list, user);
         assertThat(result).isEqualTo(99);
     }
 
     @Test
     void testSearchIndexNof() {
         User user = User.of("User00");
-
-        ForkJoinPool pool = ForkJoinPool.commonPool();
-        ParallelIndexSearch task = new ParallelIndexSearch<>(list, user, 0, list.size());
-        Integer result = (Integer) pool.invoke(task);
+        Integer result = ParallelIndexSearch.goSearch(list, user);
         assertThat(result).isEqualTo(-1);
     }
 
     @Test
     void testSearchIndexShortList0() {
         User user = User.of("User0");
-
-        ForkJoinPool pool = ForkJoinPool.commonPool();
-        ParallelIndexSearch task = new ParallelIndexSearch<>(shortList, user, 0, shortList.size());
-        Integer result = (Integer) pool.invoke(task);
+        Integer result = ParallelIndexSearch.goSearch(list, user);
         assertThat(result).isEqualTo(0);
     }
 
     @Test
     void testSearchIndexDiffTypesStr() {
-        ForkJoinPool pool = ForkJoinPool.commonPool();
-        ParallelIndexSearch task = new ParallelIndexSearch<>(shortList, "user", 0, shortList.size());
-        Integer result = (Integer) pool.invoke(task);
+        Integer result = ParallelIndexSearch.goSearch(list, "user");
         assertThat(result).isEqualTo(-1);
     }
 
     @Test
     void testSearchIndexDiffTypesInt() {
         User user = User.of("User0");
-        ForkJoinPool pool = ForkJoinPool.commonPool();
-        ParallelIndexSearch task = new ParallelIndexSearch<>(shortList, 0, 0, shortList.size());
-        Integer result = (Integer) pool.invoke(task);
+        Integer result = ParallelIndexSearch.goSearch(list, 0);
         assertThat(result).isEqualTo(-1);
     }
 }
