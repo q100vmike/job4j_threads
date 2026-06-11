@@ -53,6 +53,24 @@ public class RolColSum {
         return sums;
     }
 
+    public static CompletableFuture<Sums[]> getTaskSumi(int[][] matrix, int startIndex) {
+        return CompletableFuture.runAsync(
+                () -> {
+                    for (int i = 0; i < matrix.length; i++) {
+                        sumRow.set(0);
+                        sumCol.set(0);
+                        for (int j = 0; j < matrix.length; j++) {
+                            sumRow.set(sumRow.get() + matrix[i][j]);
+                            sumCol.set(sumCol.get() + matrix[j][i]);
+                        }
+                        sums[i] = new Sums();
+                        sums[i].setRowSum(sumRow.get());
+                        sums[i].setColSum(sumCol.get());
+                    }
+                }
+        );
+    }
+
     public static Sums[] asyncSum(int[][] matrix) {
         AtomicInteger sumCol = new AtomicInteger();
         AtomicInteger sumRow = new AtomicInteger();
