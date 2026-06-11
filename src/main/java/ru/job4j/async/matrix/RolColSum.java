@@ -1,5 +1,8 @@
 package ru.job4j.async.matrix;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class RolColSum {
     public static class Sums {
         private int rowSum;
@@ -37,23 +40,48 @@ public class RolColSum {
 
 
         for (int i = 0; i < matrix.length; i++) {
+            sumRow = 0;
+            sumCol = 0;
             for (int j = 0; j < matrix.length; j++) {
                 sumRow = sumRow + matrix[i][j];
+                sumCol = sumCol + matrix[j][i];
             }
             sums[i] = new Sums();
             sums[i].setRowSum(sumRow);
-        }
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix.length; j++) {
-                sumCol = sumCol + matrix[i][j];
-            }
             sums[i].setColSum(sumCol);
         }
         return sums;
     }
 
     public static Sums[] asyncSum(int[][] matrix) {
-        //Sums[] sums = new Sums[matrix.length];
+        AtomicInteger sumCol = new AtomicInteger();
+        AtomicInteger sumRow = new AtomicInteger();
+        int len = matrix.length;
+        Sums[] sums = new Sums[len];
+
+        CompletableFuture.runAsync(
+                () -> {
+                    for (int i = 0; i < matrix.length; i++) {
+                        sumRow.set(0);
+                        sumCol.set(0);
+                        for (int j = 0; j < matrix.length; j++) {
+                            sumRow.set(sumRow.get() + matrix[i][j]);
+                            sumCol.set(sumCol.get() + matrix[j][i]);
+                        }
+                        sums[i] = new Sums();
+                        sums[i].setRowSum(sumRow.get());
+                        sums[i].setColSum(sumCol.get());
+                    }
+//                    System.out.println("Сын: Мам/Пам, я пошел выносить мусор");
+//                    try {
+//                        TimeUnit.SECONDS.sleep(5);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    System.out.println("Сын: Мам/Пап, я вернулся!");
+                }
+        );
+
         return new Sums[matrix.length];
     }
 
@@ -65,10 +93,7 @@ public class RolColSum {
         };
         Sums[] sums = RolColSum.sum(array);
         for (int i = 0; i < array.length; i++) {
-            System.out.println(sums[i].getRowSum() + "==" + sums[i].getColSum());
+            System.out.println(i + ":" + "->" + sums[i].getRowSum() + "==" + sums[i].getColSum() + "|");
         }
-
-        //стр 18
-        //стб 18
     }
 }
